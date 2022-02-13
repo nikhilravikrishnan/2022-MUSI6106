@@ -2,7 +2,7 @@
 # include "CombFilterIf.h"
 # include "RingBuffer.h"
 
-CCombFilterBase::CCombFilterBase() :
+CCombFilterBase::CCombFilterBase()
 {
     this->initDefaults();
 }
@@ -19,9 +19,9 @@ Error_t CCombFilterBase::initDefaults()
     m_iNumChannels = 2;
     kBlockSize = 1024;
 
-    CRingBuffer<float> **pCRingBuff = new *CRingBuffer<float>(m_iNumChannels);
+    CRingBuffer<float> **pCRingBuff = new CRingBuffer<float>* [m_iNumChannels];
     for (int i = 0; i < m_iNumChannels; i++)
-        pCRingBuff[i] = new pCRingBuff[kBlockSize];
+        pCRingBuff[i] = new CRingBuffer<float>(kBlockSize);
 
 }
 
@@ -45,19 +45,21 @@ Error_t CCombFilterBase::processBuffer(float **ppfInputBuffer, float **ppfOutPut
 
 Error_t CCombFilterBase::processFIR(float **ppfInputBuffer, float **ppfOutPutBuffer, int iNumberOfFrames)
 {
-    for (int i = 0; i < m_fDelayInSamples; i++)
-    {
-        pCRingBuff->putPostInc(0.F*i);
-    }
-
-    pCRingBuff->setReadIdx(0);
+    for (int i =0; i < m_iNumChannels; i++)
+        {
+            for (int j = 0; j < m_fDelayInSamples; j++) {
+                pCRingBuff[i]->putPostInc(0.F * j);
+            }
+        }
+    for (int i = 0; i < m_iNumChannels; i++)
+        pCRingBuff[i]->setReadIdx(0);
 
     for (int i = 0; i < m_iNumChannels; i++)
     {
         for (int j = 0; j < kBlockSize; j++)
         {
-            ppfOutPutBuffer[i][j] = ppfInputBuffer[i][j] + m_gain*pCRingBuff->getPostInc();
-            pCRingBuff->putPostInc(ppfInputBuffer[i][j]);
+            ppfOutPutBuffer[i][j] = ppfInputBuffer[i][j] + m_gain*pCRingBuff[i]->getPostInc();
+            pCRingBuff[i]->putPostInc(ppfInputBuffer[i][j]);
 
         }
     }
@@ -72,14 +74,15 @@ Error_t CCombFilterBase::processIIR(float **ppfInputBuffer, float **ppfOutPutBuf
             pCRingBuff[i]->putPostInc(0.F*j);
         }
     }
-    pCRingBuff->setReadIdx(0);
+    for (int i = 0; i < m_iNumChannels; i++)
+        pCRingBuff[i]->setReadIdx(0);
 
     for (int i = 0; i < m_iNumChannels; i++)
     {
         for (int j = 0; j < kBlockSize; j++)
         {
             ppfOutPutBuffer[i][j] = ppfInputBuffer[i][j] + m_gain*pCRingBuff[i]->getPostInc();
-            pCRingBuff[i]->putPostInc(ppfOutputBuffer[i][j]);
+            pCRingBuff[i]->putPostInc(ppfOutPutBuffer[i][j]);
 
         }
     }

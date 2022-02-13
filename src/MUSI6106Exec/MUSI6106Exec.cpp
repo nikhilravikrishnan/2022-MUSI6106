@@ -27,6 +27,7 @@ int main(int argc, char* argv[])
     float **ppfAudioData = 0;
 
     CAudioFileIf *phAudioFile = 0;
+    CCombFilterIf *pcCombFilter = 0;
     std::fstream hOutputFile;
     CAudioFileIf::FileSpec_t stFileSpec;
 
@@ -48,6 +49,11 @@ int main(int argc, char* argv[])
     //////////////////////////////////////////////////////////////////////////////
     // open the input wave file
     CAudioFileIf::create(phAudioFile);
+    CCombFilterIf::create(pcCombFilter);
+    
+
+
+
     phAudioFile->openFile(sInputFilePath, CAudioFileIf::kFileRead);
     if (!phAudioFile->isOpen())
     {

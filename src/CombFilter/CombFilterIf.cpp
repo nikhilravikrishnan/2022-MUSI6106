@@ -78,12 +78,12 @@ Error_t CCombFilterIf::reset ()
 
 Error_t CCombFilterIf::process (float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames)
 {
-    m_pCCombFilter->processBuffer(**ppfInputBuffer, **ppfOutPutBuffer, iNumberOfFrames);
+    m_pCCombFilter->processBuffer(ppfInputBuffer, ppfOutputBuffer, iNumberOfFrames);
 }
 
 Error_t CCombFilterIf::setParam (FilterParam_t eParam, float fParamValue)
 {
-    FilterParam_t eParam = fParamValue;
+    eParam = fParamValue;
 }
 
 float CCombFilterIf::getParam (FilterParam_t eParam) const
