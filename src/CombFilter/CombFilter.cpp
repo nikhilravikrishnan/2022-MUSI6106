@@ -50,20 +50,40 @@ Error_t CCombFilterBase::processFIR(float **ppfInputBuffer, float **ppfOutPutBuf
         pCRingBuff->putPostInc(0.F*i);
     }
 
-    pCRingBuff->
+    pCRingBuff->setReadIdx(0);
 
     for (int i = 0; i < m_iNumChannels; i++)
     {
         for (int j = 0; j < kBlockSize; j++)
         {
-            ppfOutPutBuffer[i][j] = ppfInputBuffer[i][j] + 
+            ppfOutPutBuffer[i][j] = ppfInputBuffer[i][j] + m_gain*pCRingBuff->getPostInc();
+            pCRingBuff->putPostInc(ppfInputBuffer[i][j]);
+
         }
     }
     
 }
 Error_t CCombFilterBase::processIIR(float **ppfInputBuffer, float **ppfOutPutBuffer, int iNumberOfFrames)
 {
+    for (int i = 0; i < m_iNumChannels; i++)
+    {
+        for (int j = 0; j < m_fDelayInSamples; j++)
+        {
+            pCRingBuff[i]->putPostInc(0.F*j);
+        }
+    }
+    pCRingBuff->setReadIdx(0);
 
+    for (int i = 0; i < m_iNumChannels; i++)
+    {
+        for (int j = 0; j < kBlockSize; j++)
+        {
+            ppfOutPutBuffer[i][j] = ppfInputBuffer[i][j] + m_gain*pCRingBuff[i]->getPostInc();
+            pCRingBuff[i]->putPostInc(ppfOutputBuffer[i][j]);
+
+        }
+    }
+    
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
