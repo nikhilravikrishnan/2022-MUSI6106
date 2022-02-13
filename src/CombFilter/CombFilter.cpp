@@ -50,9 +50,17 @@ Error_t CCombFilterBase::processFIR(float **ppfInputBuffer, float **ppfOutPutBuf
         pCRingBuff->putPostInc(0.F*i);
     }
 
-    for (int i = ; )
-}
+    pCRingBuff->
 
+    for (int i = 0; i < m_iNumChannels; i++)
+    {
+        for (int j = 0; j < kBlockSize; j++)
+        {
+            ppfOutPutBuffer[i][j] = ppfInputBuffer[i][j] + 
+        }
+    }
+    
+}
 Error_t CCombFilterBase::processIIR(float **ppfInputBuffer, float **ppfOutPutBuffer, int iNumberOfFrames)
 {
 
