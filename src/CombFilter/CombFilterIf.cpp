@@ -13,7 +13,7 @@
 static const char*  kCMyProjectBuildDate = __DATE__;
 
 
-CCombFilterIf::CCombFilterIf () :
+CCombFilterIf::CCombFilterIf() :
     m_bIsInitialized(false),
     m_pCCombFilter(0),
     m_fSampleRate(0)
@@ -23,12 +23,12 @@ CCombFilterIf::CCombFilterIf () :
 }
 
 
-CCombFilterIf::~CCombFilterIf ()
+CCombFilterIf::~CCombFilterIf()
 {
     this->reset ();
 }
 
-const int  CCombFilterIf::getVersion (const Version_t eVersionIdx)
+const int  CCombFilterIf::getVersion(const Version_t eVersionIdx)
 {
     int iVersion = 0;
 
@@ -57,7 +57,7 @@ const char*  CCombFilterIf::getBuildDate ()
 
 Error_t CCombFilterIf::create (CCombFilterIf*& pCCombFilter)
 {
-
+    pCCombFilter = new CCombFilterBase();
 }
 
 Error_t CCombFilterIf::destroy (CCombFilterIf*& pCCombFilter)
@@ -67,18 +67,7 @@ Error_t CCombFilterIf::destroy (CCombFilterIf*& pCCombFilter)
 
 Error_t CCombFilterIf::init (CombFilterType_t eFilterType, float fMaxDelayLengthInS, float fSampleRateInHz, int iNumChannels)
 {
-    if(eFilterType == 0)
-        pCCombFilter = new CCombFilterFIR();
-
-    if(eFilterType == 1)
-        pcCombFilter = new CCombFilterIIR();
-    
-
-    pcCombFilter->initializeParams(fMaxDelay)
-
-
-
-
+    m_pcCombFilter->init(eFilterType, fMaxDelayLengthInS, fSampleRateInHz, iNumChannels);
     
 }
 
@@ -89,7 +78,7 @@ Error_t CCombFilterIf::reset ()
 
 Error_t CCombFilterIf::process (float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames)
 {
-    pCCombFilter->processsBuffer(**ppfInputBuffer, **ppfOutPutBuffer, iNumberOfFrames)
+    m_pCCombFilter->processBuffer(**ppfInputBuffer, **ppfOutPutBuffer, iNumberOfFrames);
 }
 
 Error_t CCombFilterIf::setParam (FilterParam_t eParam, float fParamValue)
