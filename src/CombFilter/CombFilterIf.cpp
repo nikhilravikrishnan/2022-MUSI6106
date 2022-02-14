@@ -62,18 +62,19 @@ Error_t CCombFilterIf::create (CCombFilterIf*& pCCombFilter)
 
 Error_t CCombFilterIf::destroy (CCombFilterIf*& pCCombFilter)
 {
-    delete [] pCCombFilter;
+    delete pCCombFilter;
+    pCCombFilter = 0;
 }
 
 Error_t CCombFilterIf::init (CombFilterType_t eFilterType, float fMaxDelayLengthInS, float fSampleRateInHz, int iNumChannels)
 {
-    m_pcCombFilter->init(eFilterType, fMaxDelayLengthInS, fSampleRateInHz, iNumChannels);
+    m_pCCombFilter->init(eFilterType, iNumChannels);
     
 }
 
 Error_t CCombFilterIf::reset ()
 {
-    return Error_t::kNoError;
+    m_pCCombFilter->initDefaults();
 }
 
 Error_t CCombFilterIf::process (float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames)
@@ -83,10 +84,10 @@ Error_t CCombFilterIf::process (float **ppfInputBuffer, float **ppfOutputBuffer,
 
 Error_t CCombFilterIf::setParam (FilterParam_t eParam, float fParamValue)
 {
-    eParam = fParamValue;
+    m_pCCombFilter->setParameters(eParam, fParamValue);
 }
 
 float CCombFilterIf::getParam (FilterParam_t eParam) const
 {
-    return eParam;
+    return m_pCCombFilter->getParameter(eParam);
 }
