@@ -43,8 +43,8 @@ int main(int argc, char* argv[])
     }
     else
     {
-        sInputFilePath = "/Users/nikhilravikrishnan/Spring2022/ASE/2022-MUSI6106/testFiles/Voice_Mary_Sadness_1.wav";
-        sOutputFilePath = "/Users/nikhilravikrishnan/Spring2022/ASE/2022-MUSI6106/testFiles/output.wav";
+        sInputFilePath = *argv[0];
+        sOutputFilePath = *argv[1];
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
     }
     phAudioFile->getFileSpec(stFileSpec);
 
-    hOutputFile->openFile(sOutputFilePath, CAudioFileIf::kFileWrite);
+    hOutputFile->openFile(sOutputFilePath, CAudioFileIf::kFileWrite, &stFileSpec);
     if (!hOutputFile->isOpen())
     {
         cout << "Wave file open error!";
@@ -81,8 +81,8 @@ int main(int argc, char* argv[])
     pcCombFilter->init(CCombFilterIf::kCombFIR, 0.5, stFileSpec.fSampleRateInHz, stFileSpec.iNumChannels);
 
 //    Setting the parameters for delay
-    pcCombFilter->setParam(CCombFilterIf::kParamGain, 0.3);
-    pcCombFilter->setParam(CCombFilterIf::kParamDelay, 500);
+    pcCombFilter->setParam(CCombFilterIf::kParamGain, *argv[2]);
+    pcCombFilter->setParam(CCombFilterIf::kParamDelay, *argv[3]);
 
     //////////////////////////////////////////////////////////////////////////////
     // allocate memory
@@ -114,19 +114,9 @@ int main(int argc, char* argv[])
         // read data (iNumOfFrames might be updated!)
         phAudioFile->readData(ppfAudioData, iNumFrames);
 
-//        pcCombFilter->process(ppfAudioData, ppfProcessedData, iNumFrames);
+        pcCombFilter->process(ppfAudioData, ppfProcessedData, iNumFrames);
 
-        cout << "\r" << "reading and writing";
 
-//        // write
-//        for (int i = 0; i < iNumFrames; i++) {
-//            for (int c = 0; c < stFileSpec.iNumChannels; c++) {
-////
-//                 ppfProcessedData[c][i] = ppfAudioData[c][i];
-//            }
-//        }
-//            hOutputFile << endl;
-//        }
         hOutputFile->writeData(ppfAudioData, iNumFrames);
     }
 
