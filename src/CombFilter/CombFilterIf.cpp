@@ -15,7 +15,7 @@ static const char*  kCMyProjectBuildDate = __DATE__;
 
 CCombFilterIf::CCombFilterIf() :
     m_bIsInitialized(false),
-    m_pCCombFilter(0),
+    m_pCCombFilter(nullptr),
     m_fSampleRate(0)
 {
     // this should never hurt
@@ -57,24 +57,44 @@ const char*  CCombFilterIf::getBuildDate ()
 
 Error_t CCombFilterIf::create (CCombFilterIf*& pCCombFilter)
 {
-    pCCombFilter = new CCombFilterBase();
+    pCCombFilter = new CCombFilterIf();
 }
 
 Error_t CCombFilterIf::destroy (CCombFilterIf*& pCCombFilter)
 {
     delete pCCombFilter;
-    pCCombFilter = 0;
+    pCCombFilter = nullptr;
 }
 
 Error_t CCombFilterIf::init (CombFilterType_t eFilterType, float fMaxDelayLengthInS, float fSampleRateInHz, int iNumChannels)
 {
-    m_pCCombFilter->init(eFilterType, iNumChannels);
-    
+//    if (eFilterType == kCombFIR)
+//        m_pCCombFilter = new CCombFilterFIR();
+//    else if (eFilterType == kCombIIR)
+//        m_pCCombFilter = new CCombFilterIIR();
+//    else
+//        return Error_t::kFunctionInvalidArgsError;
+
+    m_pCCombFilter = new CCombFilterBase();
+
+
+    m_pCCombFilter->initDefaults();
+    m_fSampleRate = fSampleRateInHz;
+    m_pCCombFilter->init(iNumChannels);
+
+
+
+//    m_pCCombFilter->init(eFilterType, fMaxDelayLengthInS, fSampleRateInHz, iNumChannels);
+
 }
 
 Error_t CCombFilterIf::reset ()
 {
-    m_pCCombFilter->initDefaults();
+    m_pCCombFilter = 0;
+    m_bIsInitialized = false;
+    m_fSampleRate = 48000;
+
+//    m_pCCombFilter->initDefaults();
 }
 
 Error_t CCombFilterIf::process (float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames)

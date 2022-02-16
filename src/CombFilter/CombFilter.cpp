@@ -3,8 +3,14 @@
 # include "RingBuffer.h"
 
 CCombFilterBase::CCombFilterBase()
+//m_fDelayInSamples(0),
+//m_fSampleRateInHz(0),
+//m_gain(0),
+//m_iNumChannels(0)
 {
-    this->initDefaults();
+    m_fDelayInSamples = 0;
+    m_gain = 0;
+    m_iNumChannels = 0;
 }
 CCombFilterBase::~CCombFilterBase()
 {
@@ -19,17 +25,16 @@ Error_t CCombFilterBase::initDefaults()
     m_fDelayInSamples = 100;
     m_fSampleRateInHz = 16000;
     m_gain = 0.5;
-    m_iNumChannels = 2;
-
-    CRingBuffer<float> **pCRingBuff = new CRingBuffer<float>* [m_iNumChannels];
+    m_iNumChannels = 1;
+    pCRingBuff = new CRingBuffer<float>* [m_iNumChannels];
     for (int i = 0; i < m_iNumChannels; i++)
         pCRingBuff[i] = new CRingBuffer<float>(m_fDelayInSamples);
 
+
 }
 
-Error_t CCombFilterBase::init(CombFilterType_t eFilterType, int iNumChannels)
+Error_t CCombFilterBase::init(int iNumChannels)
 {
-    m_eFilterType = eFilterType;
     m_iNumChannels = iNumChannels;
 }
 
@@ -63,6 +68,7 @@ Error_t CCombFilterBase::processBuffer(float **ppfInputBuffer, float **ppfOutPut
     }
 }
 
+
 Error_t CCombFilterBase::setParameters(CCombFilterIf::FilterParam_t eParam, float fParamValue) {
 
     if (eParam == kParamGain)
@@ -80,6 +86,43 @@ float CCombFilterBase::getParameter(CCombFilterIf::FilterParam_t eParam) {
         return m_gain;
 }
 
+Error_t CCombFilterBase::setFilterType(CCombFilterIf::CombFilterType_t filterType) {
+    m_eFilterType = filterType;
+}
 
 
+Error_t CCombFilterFIR::processBuffer(float **ppfInputBuffer, float **ppfOutPutBuffer, int iNumberOfFrames) {
+//    for (int i = 0; i < m_iNumChannels; i++) {
+//        for (int j = 0; j < m_fDelayInSamples; j++) {
+//            pCRingBuff[i]->putPostInc(0.F * j);
+//        }
+//    }
+//    for (int i = 0; i < m_iNumChannels; i++)
+//        pCRingBuff[i]->setReadIdx(0);
+//
+//    for (int i = 0; i < m_iNumChannels; i++) {
+//        for (int j = 0; j < iNumberOfFrames; j++) {
+//            ppfOutPutBuffer[i][j] = ppfInputBuffer[i][j] + m_gain * pCRingBuff[i]->getPostInc();
+//            pCRingBuff[i]->putPostInc(ppfInputBuffer[i][j]);
+//        }
+//    }
+    return Error_t::kUnknownError;
+}
 
+Error_t CCombFilterIIR::processBuffer(float **ppfInputBuffer, float **ppfOutPutBuffer, int iNumberOfFrames) {
+//    for (int i = 0; i < m_iNumChannels; i++) {
+//        for (int j = 0; j < m_fDelayInSamples; j++) {
+//            pCRingBuff[i]->putPostInc(0.F * j);
+//        }
+//    }
+//    for (int i = 0; i < m_iNumChannels; i++)
+//        pCRingBuff[i]->setReadIdx(0);
+//
+//    for (int i = 0; i < m_iNumChannels; i++) {
+//        for (int j = 0; j < iNumberOfFrames; j++) {
+//            ppfOutPutBuffer[i][j] = ppfInputBuffer[i][j] + m_gain * pCRingBuff[i]->getPostInc();
+//            pCRingBuff[i]->putPostInc(ppfOutPutBuffer[i][j]);
+//        }
+//    }
+    return Error_t::kUnknownError;
+}
