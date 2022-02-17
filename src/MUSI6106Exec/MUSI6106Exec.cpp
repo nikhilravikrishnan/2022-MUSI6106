@@ -1,7 +1,7 @@
 
 #include <iostream>
 #include <ctime>
-
+#include <stdlib.h>
 #include "MUSI6106Config.h"
 
 #include "AudioFileIf.h"
@@ -36,19 +36,19 @@ int main(int argc, char* argv[])
 
     //////////////////////////////////////////////////////////////////////////////
     // parse command line arguments
-    if (argc < 2)
+    if (argc < 4)
     {
         cout << "Missing audio input path!";
         return -1;
     }
     else
     {
-        sInputFilePath = *argv[0];
-        sOutputFilePath = *argv[1];
+        sInputFilePath = argv[1];
+        sOutputFilePath = argv[2];
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    // open the input wave file
+    // open the input wave file, output file and
     CAudioFileIf::create(phAudioFile);
     CAudioFileIf::create(hOutputFile);
     CCombFilterIf::create(pcCombFilter);
@@ -81,8 +81,8 @@ int main(int argc, char* argv[])
     pcCombFilter->init(CCombFilterIf::kCombFIR, 0.5, stFileSpec.fSampleRateInHz, stFileSpec.iNumChannels);
 
 //    Setting the parameters for delay
-    pcCombFilter->setParam(CCombFilterIf::kParamGain, *argv[2]);
-    pcCombFilter->setParam(CCombFilterIf::kParamDelay, *argv[3]);
+    pcCombFilter->setParam(CCombFilterIf::kParamGain, atof(argv[3]));
+    pcCombFilter->setParam(CCombFilterIf::kParamDelay, atof(argv[4]));
 
     //////////////////////////////////////////////////////////////////////////////
     // allocate memory
@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
         pcCombFilter->process(ppfAudioData, ppfProcessedData, iNumFrames);
 
 
-        hOutputFile->writeData(ppfAudioData, iNumFrames);
+        hOutputFile->writeData(ppfProcessedData, iNumFrames);
     }
 
     cout << "\nreading/writing done in: \t" << endl;
