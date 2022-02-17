@@ -23,7 +23,6 @@ Error_t CCombFilterBase::initDefaults()
     // m_gain = getParam(FilterParam_t::kParamGain);
 
     m_fDelayInSamples = 100;
-    m_fSampleRateInHz = 16000;
     m_gain = 0.5;
     m_iNumChannels = 1;
 
@@ -86,7 +85,7 @@ Error_t CCombFilterBase::setFilterType(CCombFilterIf::CombFilterType_t filterTyp
 }
 
 Error_t CCombFilterBase::initBuffer(CRingBuffer<float> **pCRingBuffer) {
-    pCRingBuff = new CRingBuffer<float>* [m_iNumChannels];
+    pCRingBuff = new CRingBuffer<float> *[m_iNumChannels];
     for (int i = 0; i < m_iNumChannels; i++)
         pCRingBuff[i] = new CRingBuffer<float>(m_fDelayInSamples);
 
