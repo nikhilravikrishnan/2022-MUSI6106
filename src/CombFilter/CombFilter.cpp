@@ -41,24 +41,24 @@ Error_t CCombFilterBase::init(int iNumChannels)
 
 Error_t CCombFilterBase::processBuffer(float **ppfInputBuffer, float **ppfOutPutBuffer, int iNumberOfFrames)
 {
+
+    // Initializing delay line with zeros
     for (int i =0; i < m_iNumChannels; i++)
     {
         for (int j = 0; j < m_fDelayInSamples; j++) {
             pCRingBuff[i]->putPostInc(0.F * j);
         }
     }
-    for (int i = 0; i < m_iNumChannels; i++)
-        pCRingBuff[i]->setReadIdx(0);
-
+    // Iterating over blocks to add delay
     for (int i = 0; i < m_iNumChannels; i++)
     {
         for (int j = 0; j < iNumberOfFrames; j++)
         {
             ppfOutPutBuffer[i][j] = ppfInputBuffer[i][j] + m_gain*pCRingBuff[i]->getPostInc();
 
-            if (this->m_eFilterType == 0)
+            if (m_eFilterType == kCombFIR)
                 pCRingBuff[i]->putPostInc(ppfInputBuffer[i][j]);
-            else if(this->m_eFilterType == 1)
+            else if(m_eFilterType == kCombIIR)
                 pCRingBuff[i]->putPostInc(ppfInputBuffer[i][j]);
             else
                 return Error_t::kFunctionInvalidArgsError;
@@ -73,8 +73,10 @@ Error_t CCombFilterBase::setParameters(CCombFilterIf::FilterParam_t eParam, floa
 
     if (eParam == kParamGain)
         m_gain = fParamValue;
-    else if (eParam == kParamDelay)
+    else if (eParam == kParamDelay) {
         m_fDelayInSamples = fParamValue;
+        initBuffer(pCRingBuff);
+    }
     else
         return Error_t::kInvalidString;
 }
@@ -88,6 +90,12 @@ float CCombFilterBase::getParameter(CCombFilterIf::FilterParam_t eParam) {
 
 Error_t CCombFilterBase::setFilterType(CCombFilterIf::CombFilterType_t filterType) {
     m_eFilterType = filterType;
+}
+
+Error_t CCombFilterBase::initBuffer(CRingBuffer<float> **pCRingBuffer) {
+    pCRingBuff = new CRingBuffer<float>* [m_iNumChannels];
+    for (int i = 0; i < m_iNumChannels; i++)
+        pCRingBuff[i] = new CRingBuffer<float>(m_fDelayInSamples);
 }
 
 

@@ -96,6 +96,16 @@ public:
     */
     Error_t process (float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames);
 
+    /*!
+     * Get sample rate [float]
+     * @return
+     */
+
+    float getSampleRate()
+    {
+        return m_fSampleRate;
+    }
+
 protected:
     CCombFilterIf ();
     virtual ~CCombFilterIf ();
