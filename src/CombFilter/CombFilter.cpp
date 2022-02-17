@@ -51,7 +51,7 @@ Error_t CCombFilterBase::processBuffer(float **ppfInputBuffer, float **ppfOutPut
             if (m_eFilterType == kCombFIR)
                 pCRingBuff[i]->putPostInc(ppfInputBuffer[i][j]);
             else if(m_eFilterType == kCombIIR)
-                pCRingBuff[i]->putPostInc(ppfInputBuffer[i][j]);
+                pCRingBuff[i]->putPostInc(ppfOutPutBuffer[i][j]);
             else
                 return Error_t::kFunctionInvalidArgsError;
 
