@@ -26,9 +26,7 @@ Error_t CCombFilterBase::initDefaults()
     m_fSampleRateInHz = 16000;
     m_gain = 0.5;
     m_iNumChannels = 1;
-    pCRingBuff = new CRingBuffer<float>* [m_iNumChannels];
-    for (int i = 0; i < m_iNumChannels; i++)
-        pCRingBuff[i] = new CRingBuffer<float>(m_fDelayInSamples);
+
 
 
 }
@@ -43,12 +41,7 @@ Error_t CCombFilterBase::processBuffer(float **ppfInputBuffer, float **ppfOutPut
 {
 
     // Initializing delay line with zeros
-    for (int i =0; i < m_iNumChannels; i++)
-    {
-        for (int j = 0; j < m_fDelayInSamples; j++) {
-            pCRingBuff[i]->putPostInc(0.F * j);
-        }
-    }
+
     // Iterating over blocks to add delay
     for (int i = 0; i < m_iNumChannels; i++)
     {
@@ -96,7 +89,14 @@ Error_t CCombFilterBase::initBuffer(CRingBuffer<float> **pCRingBuffer) {
     pCRingBuff = new CRingBuffer<float>* [m_iNumChannels];
     for (int i = 0; i < m_iNumChannels; i++)
         pCRingBuff[i] = new CRingBuffer<float>(m_fDelayInSamples);
+
+    for (int i = 0; i < m_iNumChannels; i++) {
+        for (int j = 0; j < m_fDelayInSamples; j++) {
+            pCRingBuff[i]->putPostInc(0.F);
+        }
+    }
 }
+
 
 
 Error_t CCombFilterFIR::processBuffer(float **ppfInputBuffer, float **ppfOutPutBuffer, int iNumberOfFrames) {
