@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 
 //    Setting the parameters for delay
     pcCombFilter->setParam(CCombFilterIf::kParamGain, atof(argv[3]));
-    pcCombFilter->setParam(CCombFilterIf::kParamDelay, atof(argv[4]));
+    pcCombFilter->setParam(CCombFilterIf::kParamDelay, atof(argv[4])*stFileSpec.fSampleRateInHz);
 
     //////////////////////////////////////////////////////////////////////////////
     // allocate memory
