@@ -10,7 +10,7 @@
 using namespace std;
 
 // consts
-const long long int CAudioFileIf::m_kiDefBlockLength      = 1024;
+const long long int CAudioFileIf::m_kiDefBlockLength = 1024;
 
 Error_t CAudioFileIf::create( CAudioFileIf*& pCInstance )
 {
