@@ -77,7 +77,7 @@ Error_t CCombFilterIf::init (CombFilterType_t eFilterType, float fMaxDelayLength
 
     m_pCCombFilter = new CCombFilterBase();
 
-
+    m_pCCombFilter->setFilterType(eFilterType);
     m_pCCombFilter->initDefaults();
     m_fSampleRate = fSampleRateInHz;
     m_pCCombFilter->init(iNumChannels);
