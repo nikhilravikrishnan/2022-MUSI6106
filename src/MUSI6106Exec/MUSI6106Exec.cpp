@@ -3,6 +3,8 @@
 #include <ctime>
 #include <stdlib.h>
 #include "MUSI6106Config.h"
+#include "test.h"
+#include <assert.h>
 
 #include "AudioFileIf.h"
 #include "CombFilterIf.h"
@@ -17,8 +19,26 @@ void    showClInfo ();
 // main function
 int main(int argc, char* argv[])
 {
+
+    if(argc == 1 )
+    {
+        testCombFilter* testFilter;
+        testFilter = new testCombFilter();
+//        testFilter->testSetup();
+        assert(testFilter->feedforwardFIRTest() == 1);
+        assert(testFilter->feedforwardIIRTest() == 1);
+        assert(testFilter->testVaryingBlockSize() == 1);
+        assert(testFilter->testZeroInputSignal() == 1);
+
+        return 0;
+
+
+    }
+
+
+
     std::string sInputFilePath,                 //!< file paths
-                sOutputFilePath;
+    sOutputFilePath;
 
     static const int kBlockSize = 1024;
 
@@ -33,8 +53,6 @@ int main(int argc, char* argv[])
     CAudioFileIf::FileSpec_t stFileSpec;
 
     showClInfo();
-
-    //////////////////////////////////////////////////////////////////////////////
     // parse command line arguments
     if (argc < 4)
     {
@@ -52,10 +70,6 @@ int main(int argc, char* argv[])
     CAudioFileIf::create(phAudioFile);
     CAudioFileIf::create(hOutputFile);
     CCombFilterIf::create(pcCombFilter);
-
-
-
-
 
 
     phAudioFile->openFile(sInputFilePath, CAudioFileIf::kFileRead);

@@ -10,7 +10,7 @@ file(GLOB ${APP}_HEADERS RELATIVE ${CMAKE_SOURCE_DIR}/src/${APP} *.h;../inc/*.h)
 add_inc_directories ()
 
 ## create the target
-add_executable(${APP} ${${APP}_SOURCES} ${${APP}_HEADERS})
+add_executable(${APP} ${${APP}_SOURCES} ${${APP}_HEADERS} ../inc/test.h ../CombFilter/test.cpp)
 
 # link the libraries
 target_link_libraries(${APP} ${LIB} ${AudioLIB} ${CombFilterLIB} ${SndLIB} ${OS_LIBS})
