@@ -5,6 +5,7 @@
 #pragma once
 
 #include "ErrorDef.h"
+#include "RingBuffer.h"
 
 /*! \brief interface for fast convolution
 */
@@ -50,7 +51,11 @@ public:
     Error_t flushBuffer(float* pfOutputBuffer);
 
 private:
-
+    float* m_ImpulseResponse;
+    float* m_InputSignal;
+    int m_IRlen;
+    int m_blockLength;
+    CRingBuffer<float> *m_pcRingBuff;
 };
 
 
