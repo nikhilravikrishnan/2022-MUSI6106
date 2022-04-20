@@ -40,7 +40,7 @@ Error_t CFastConv::process (float* pfOutputBuffer, const float *pfInputBuffer, i
         m_pcRingBuff->setReadIdx(m_pcRingBuff->getWriteIdx() + 1);
         m_pcRingBuff->putPostInc(pfInputBuffer[i]);
 
-        for (int j = m_IRlen; j >0; j--)
+        for (int j = m_IRlen - 1; j >= 0; j--)
         {
             pfOutputBuffer[i] += m_ImpulseResponse[j] * m_pcRingBuff->getPostInc();
         }
