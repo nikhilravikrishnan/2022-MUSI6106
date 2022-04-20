@@ -51,5 +51,82 @@ Error_t CFastConv::process (float* pfOutputBuffer, const float *pfInputBuffer, i
 
 Error_t CFastConv::flushBuffer(float* pfOutputBuffer)
 {
+
     return Error_t::kNoError;
+}
+
+void CFastConv::processFrequencyDomain(float *pfOutputBuffer, const float* pfInputBuffer, int iLengthofBuffers)
+{
+    long seqLen = sizeof(*pfInputBuffer)/sizeof (pfInputBuffer[0]);
+    long numIRBlocks = floor(m_IRlen/m_blockLength);
+
+    pfOutputBuffer = new float[seqLen];
+
+    float **ImpulseResponseBlocks = nullptr;
+    float **ImpulseResponseBlocksSpectrum = nullptr;
+
+    long realStartIdx = 0;
+    long imagStartIdx = m_blockLength;
+
+//    To account for zero-padding
+    float *realInputBlock = new float[m_blockLength];
+    float *imagInputBlock = new float[m_blockLength];
+    std::complex<float> *inputToFFT = new std::complex<float>[2*m_blockLength];
+
+
+    std::memset(realInputBlock, 0, sizeof(float)*m_blockLength);
+    std::memset(imagInputBlock, 0, sizeof(float)*m_blockLength);
+    std::memset(inputToFFT, 0. + 0i, sizeof(std::complex<float>)*m_blockLength*2;
+
+
+    for (int i = 0; i < numIRBlocks; i++)
+    {
+        *ImpulseResponseBlocks = new float [2*m_blockLength];
+        std::memset (ImpulseResponseBlocks[i], 0, sizeof(float)*m_blockLength*2;
+    }
+
+//    Generate blocks for Impulse Response
+    for (int i = 0; i < numIRBlocks; i++)
+    {
+        for (int j = 0; j < m_blockLength; j++)
+        {
+            ImpulseResponseBlocks[i][j] = m_ImpulseResponse[i*m_blockLength + j];
+        }
+        ImpulseResponseBlocksSpectrum =
+    }
+
+
+
+//    Main Loop
+    while (realStartIdx < seqLen)
+    {
+        std::memcpy(realInputBlock, pfInputBuffer + realStartIdx, (m_blockLength)*sizeof(float));
+        std::memcpy(imagInputBlock, pfInputBuffer + imagStartIdx, (m_blockLength)*sizeof(float));
+
+//     Generate blocks for FFT computation
+        for (long i = 0; i < m_blockLength; i++)
+        {
+            std::complex<float> number = (realInputBlock[i], imagInputBlock[i]);
+            inputToFFT[i] = number ;
+        }
+
+
+
+
+
+
+
+
+    realStartIdx+=m_blockLength*2;
+    imagStartIdx+=m_blockLength*2;
+
+    }
+
+
+
+}
+
+void CFastConv::overlapAdd(float *pOutputBuffer, float *block, long startIdx, int blo)
+{
+
 }

@@ -6,6 +6,7 @@
 
 #include "ErrorDef.h"
 #include "RingBuffer.h"
+#include <complex>
 
 /*! \brief interface for fast convolution
 */
@@ -50,12 +51,17 @@ public:
     */
     Error_t flushBuffer(float* pfOutputBuffer);
 
+    void processFrequencyDomain(float *pfOutputBuffer, const float* pfInputBuffer, int iLengthofBuffers);
+
+    void overlapAdd(float* pOutputBuffer, float* block, long startIdx, int blockSize);
+
 private:
     float* m_ImpulseResponse;
     float* m_InputSignal;
     int m_IRlen;
     int m_blockLength;
     CRingBuffer<float> *m_pcRingBuff;
+    float* pOutputBufferFreq = 0;
 };
 
 
