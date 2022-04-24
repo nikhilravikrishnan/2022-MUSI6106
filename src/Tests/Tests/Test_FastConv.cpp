@@ -56,9 +56,8 @@ namespace fastconv_test {
             InputSignal[i] = rand() % 10;
         }
 
-        CFastConv fastConv;
-        fastConv.init(ImpulseResponse, IRLength, 10);
-        fastConv.process(outputBuffer, InputSignal, 10);
+        m_pCFastConv->init(ImpulseResponse, IRLength, 10);
+        m_pCFastConv->process(outputBuffer, InputSignal, 10);
 
         CHECK_ARRAY_CLOSE(outputBuffer + 3, InputSignal, 7, 1e-3);
     }

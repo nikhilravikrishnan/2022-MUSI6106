@@ -7,6 +7,7 @@
 #include "ErrorDef.h"
 #include "RingBuffer.h"
 #include <complex>
+#include<Fft.h>
 
 /*! \brief interface for fast convolution
 */
@@ -30,7 +31,7 @@ public:
     \param iBlockLength processing block size
     \return Error_t
     */
-    Error_t init(float* pfImpulseResponse, int iLengthOfIr, int iBlockLength = 8192, ConvCompMode_t eCompMode = kFreqDomain);
+    Error_t init(float* pfImpulseResponse, int iLengthOfIr, int iBlockLength = 8192);
 
     /*! resets all internal class members
     \return Error_t
@@ -53,8 +54,6 @@ public:
 
     void processFrequencyDomain(float *pfOutputBuffer, const float* pfInputBuffer, int iLengthofBuffers);
 
-    void overlapAdd(float* pOutputBuffer, float* block, long startIdx, int blockSize);
-
 private:
     float* m_ImpulseResponse;
     float* m_InputSignal;
@@ -62,6 +61,8 @@ private:
     int m_blockLength;
     CRingBuffer<float> *m_pcRingBuff;
     float* pOutputBufferFreq = 0;
+    CFft* fft = 0;
+
 };
 
 

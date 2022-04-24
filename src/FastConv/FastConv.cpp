@@ -10,13 +10,15 @@ CFastConv::~CFastConv( void )
     reset();
 }
 
-Error_t CFastConv::init(float *pfImpulseResponse, int iLengthOfIr, int iBlockLength /*= 8192*/, ConvCompMode_t eCompMode /*= kFreqDomain*/)
+Error_t CFastConv::init(float *pfImpulseResponse, int iLengthOfIr, int iBlockLength)
 {
 
     m_ImpulseResponse = pfImpulseResponse;
     m_blockLength = iBlockLength;
     m_IRlen = iLengthOfIr;
     m_pcRingBuff = new CRingBuffer<float>(iLengthOfIr);
+    CFft::createInstance(fft);
+    fft->initInstance(iBlockLength);
 
     return Error_t::kNoError;
 }
@@ -57,13 +59,13 @@ Error_t CFastConv::flushBuffer(float* pfOutputBuffer)
 
 void CFastConv::processFrequencyDomain(float *pfOutputBuffer, const float* pfInputBuffer, int iLengthofBuffers)
 {
-    long seqLen = sizeof(*pfInputBuffer)/sizeof (pfInputBuffer[0]);
+    long seqLen = sizeof(*pfInputBuffer)/sizeof (pfInputBuffer[0]) + m_blockLength - 1;
     long numIRBlocks = floor(m_IRlen/m_blockLength);
 
     pfOutputBuffer = new float[seqLen];
 
     float **ImpulseResponseBlocks = nullptr;
-    float **ImpulseResponseBlocksSpectrum = nullptr;
+    CFft::complex_t **ImpulseResponseBlocksSpectrum = nullptr;
 
     long realStartIdx = 0;
     long imagStartIdx = m_blockLength;
@@ -71,18 +73,21 @@ void CFastConv::processFrequencyDomain(float *pfOutputBuffer, const float* pfInp
 //    To account for zero-padding
     float *realInputBlock = new float[m_blockLength];
     float *imagInputBlock = new float[m_blockLength];
-    std::complex<float> *inputToFFT = new std::complex<float>[2*m_blockLength];
+//    std::complex<float> *inputToFFT = new std::complex<float>[2*m_blockLength];
+    float *inputToFFT = new float[2*m_blockLength];
+    CFft::complex_t *outputFFT = new float[2*m_blockLength];
+    float* convFFT = new float[2*m_blockLength];
 
 
     std::memset(realInputBlock, 0, sizeof(float)*m_blockLength);
-    std::memset(imagInputBlock, 0, sizeof(float)*m_blockLength);
-    std::memset(inputToFFT, 0. + 0i, sizeof(std::complex<float>)*m_blockLength*2;
+//    std::memset(imagInputBlock, 0, sizeof(float)*m_blockLength);
+    std::memset(inputToFFT, 0, sizeof(float)*m_blockLength*2);
 
 
     for (int i = 0; i < numIRBlocks; i++)
     {
         *ImpulseResponseBlocks = new float [2*m_blockLength];
-        std::memset (ImpulseResponseBlocks[i], 0, sizeof(float)*m_blockLength*2;
+        std::memset (ImpulseResponseBlocks[i], 0, sizeof(float)*m_blockLength*2);
     }
 
 //    Generate blocks for Impulse Response
@@ -92,7 +97,7 @@ void CFastConv::processFrequencyDomain(float *pfOutputBuffer, const float* pfInp
         {
             ImpulseResponseBlocks[i][j] = m_ImpulseResponse[i*m_blockLength + j];
         }
-        ImpulseResponseBlocksSpectrum =
+        fft->doFft(ImpulseResponseBlocksSpectrum[i], ImpulseResponseBlocks[i]);
     }
 
 
@@ -101,32 +106,25 @@ void CFastConv::processFrequencyDomain(float *pfOutputBuffer, const float* pfInp
     while (realStartIdx < seqLen)
     {
         std::memcpy(realInputBlock, pfInputBuffer + realStartIdx, (m_blockLength)*sizeof(float));
-        std::memcpy(imagInputBlock, pfInputBuffer + imagStartIdx, (m_blockLength)*sizeof(float));
+//        std::memcpy(imagInputBlock, pfInputBuffer + imagStartIdx, (m_blockLength)*sizeof(float));
 
 //     Generate blocks for FFT computation
-        for (long i = 0; i < m_blockLength; i++)
+//        for (long i = 0; i < m_blockLength; i++)
+//        {
+//            inputToFFT[i] = realInputBlock[i];
+//        }
+        std::memcpy(inputToFFT, realInputBlock, (m_blockLength)*sizeof (float));
+        fft->doFft(outputFFT, inputToFFT);
+
+//        Computing convolution
+        for (int i = 0; i < numIRBlocks; i++)
         {
-            std::complex<float> number = (realInputBlock[i], imagInputBlock[i]);
-            inputToFFT[i] = number ;
+            for (int j = 0; j < m_blockLength*2; j++)
+            {
+                convFFT[j] = outputFFT[j]*ImpulseResponseBlocksSpectrum[i][j];
+            }
+
         }
 
-
-
-
-
-
-
-
-    realStartIdx+=m_blockLength*2;
-    imagStartIdx+=m_blockLength*2;
-
     }
-
-
-
-}
-
-void CFastConv::overlapAdd(float *pOutputBuffer, float *block, long startIdx, int blo)
-{
-
 }
